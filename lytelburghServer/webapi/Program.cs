@@ -8,6 +8,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApiDocument();
 
+//builder.Services.AddScoped<IMyService, MyService>();
+
+builder.Services.AddHttpClient<OpenAIAPIService>();
+// TODO: Define interface for service
+builder.Services.AddSingleton(x => new OpenAIAPIService(x.GetRequiredService<HttpClient>(), ""));
 
 
 #if DEBUG

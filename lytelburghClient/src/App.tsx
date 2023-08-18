@@ -25,6 +25,7 @@ function App() {
           onClick={async () => {
             setCount((count) => count + 1);
             console.log(await api.weatherForecast())
+            
           }}
         >
           count is {count}
