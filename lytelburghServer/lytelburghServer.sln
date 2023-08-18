@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "reactapp", "reactapp\reactapp.esproj", "{A3A5C69E-C45A-40B4-9E8F-B41D450C902D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webapi", "webapi\webapi.csproj", "{5123B439-E0CB-45BA-94E5-3FBD1413F931}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LytelburghApi", "webapi\LytelburghApi.csproj", "{5123B439-E0CB-45BA-94E5-3FBD1413F931}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
