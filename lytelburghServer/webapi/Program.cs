@@ -1,4 +1,13 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+
+using var db = new ForthbroughtFadungFramework();
+
+Console.WriteLine($"Database path: {db.DbPath}.");
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
 
 // Add services to the container.
 
@@ -12,7 +21,16 @@ builder.Services.AddOpenApiDocument();
 
 builder.Services.AddHttpClient<OpenAIAPIService>();
 // TODO: Define interface for service
-builder.Services.AddSingleton(x => new OpenAIAPIService(x.GetRequiredService<HttpClient>(), ""));
+builder.Services.AddSingleton(x =>
+{
+    string apiKey = builder.Configuration["AppSettings:OpenAIapiKey"];
+    if (apiKey == null)
+    {
+        throw new InvalidOperationException("OpenAI API key is not configured.");
+    }
+    return new OpenAIAPIService(x.GetRequiredService<HttpClient>(), apiKey);
+});
+
 
 
 #if DEBUG
@@ -55,3 +73,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
