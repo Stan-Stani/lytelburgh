@@ -21,4 +21,22 @@ public class CompletionController : ControllerBase
     {
         return await _openAIAPIService.SendCompletionRequestAsync("hey...");
     }
+
+    public async Task<IActionResult> PostCompletionRequest([FromBody] CompletionRequestDTO completionRequestDTO)
+    {
+        if (completionRequestDTO == null || string.IsNullOrEmpty(completionRequestDTO.Content))
+        {
+            return BadRequest(new { message = "Invalid request" });
+        }
+
+        var completion = await _openAIAPIService.SendCompletionRequestAsync(completionRequestDTO.Content);
+        return Ok(new { completion });
+
+    }
+
+    public class CompletionRequestDTO
+    {
+        public string Content { get; set; }
+    }
+
 }

@@ -2,6 +2,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 
 public class OpenAIAPIService
@@ -42,3 +44,35 @@ public class OpenAIAPIService
         throw new HttpRequestException($"Error sending request: {response.StatusCode}");
     }
 }
+
+public class openAICompletionRequest
+{
+    string Model { get; set; } = "gpt-3.5-turbo";
+    Array Messages = new Array<Message>();
+    double Temperature { get; set; } = 0.7;
+
+    public class Message
+    {
+        string Role { get; set; } = "user";
+        public string Content { get; set; }
+
+        public Message(string content)
+        {
+            if (string.IsNullOrEmpty(content))
+            {
+                throw new ArgumentException("Content cannot be null or empty");
+            }
+
+            Content = content;
+        }
+    }
+
+}
+
+
+var requestContent = new
+{
+    model = "gpt-3.5-turbo",
+    messages = new[] { new { role = "user", content = messageContent } },
+    temperature
+};
