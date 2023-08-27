@@ -28,14 +28,6 @@ public class ForthbroughtFadungFramework : DbContext
 
 public class Begetter
 {
-    Begetter(string givenName, string surName, string nickName, float age, List<Thinkback>? thinkbacks = null)
-    {
-        GivenName = givenName;
-        SurName = surName;
-        NickName = nickName;
-        Age = age;
-        Thinkbacks = thinkbacks;
-    }
 
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -44,13 +36,45 @@ public class Begetter
     public string SurName { get; set; }
     public string NickName { get; set; }
     public float Age { get; set; }
+    public GenderEnum Gender { get; set; } = GenderEnum.Custom;
+    public string? CustomGender { get; set; }
+
     public ICollection<Thinkback> Thinkbacks { get; set; } = new List<Thinkback>();
+    
+    public Begetter(string givenName, string surName, string nickName, float age, GenderEnum gender, ICollection<Thinkback>? thinkbacks = null)
+    {
+        GivenName = givenName;
+        SurName = surName;
+        NickName = nickName;
+        Age = age;
+        Thinkbacks = thinkbacks ?? Thinkbacks;
+        Gender = gender;
+    }
+
+    public Begetter(string givenName, string surName, string nickName, float age, string customGender, ICollection<Thinkback>? thinkbacks = null)
+    {
+        GivenName = givenName;
+        SurName = surName;
+        NickName = nickName;
+        Age = age;
+        Thinkbacks = thinkbacks ?? Thinkbacks;
+        CustomGender = customGender;
+    }
+
+}
+
+public enum GenderEnum
+{
+    Male,
+    Female,
+    NonBinary,
+    Custom
 }
 
 
 public class Thinkback
 {
-    Thinkback(DateTime dateTime, string narrative, Begetter begetter)
+    public Thinkback(DateTime dateTime, string narrative, Begetter begetter)
     {
         DateTime = dateTime;
         Narrative = narrative;
