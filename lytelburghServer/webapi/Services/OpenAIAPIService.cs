@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 public class OpenAIAPIService
 {
@@ -45,15 +47,21 @@ public class OpenAIAPIService
     }
 }
 
-public class openAICompletionRequest
+public class OpenAICompletionRequest
 {
     string Model { get; set; } = "gpt-3.5-turbo";
-    Array Messages = new Array<Message>();
+    ICollection<Message> Messages { get; set; }
     double Temperature { get; set; } = 0.7;
+
+    OpenAICompletionRequest(ICollection<Message> messages)
+    {
+        Messages = messages;
+    }
 
     public class Message
     {
-        string Role { get; set; } = "user";
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy))]
+        public RoleEnum Role { get; set; } = RoleEnum.User;
         public string Content { get; set; }
 
         public Message(string content)
@@ -65,14 +73,16 @@ public class openAICompletionRequest
 
             Content = content;
         }
+
+        public enum RoleEnum
+        {
+            System,
+            User,
+            Assistant,
+            Function
+
+        }
     }
 
 }
 
-
-var requestContent = new
-{
-    model = "gpt-3.5-turbo",
-    messages = new[] { new { role = "user", content = messageContent } },
-    temperature
-};
