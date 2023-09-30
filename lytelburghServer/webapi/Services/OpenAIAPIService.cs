@@ -1,9 +1,8 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -20,10 +19,11 @@ public class OpenAIAPIService
 
         _httpClient.BaseAddress = new System.Uri("https://api.openai.com/");
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
-        
+
     }
 
-    public async Task<string> SendCompletionRequestAsync(string messageContent, double temperature = 0.7)
+    // Define type of response from OpenAI and handle error if type doesn't match expected type
+    public async Task<object> SendCompletionRequestAsync(string messageContent, double temperature = 0.7)
     {
         var requestContent = new
         {
@@ -37,52 +37,25 @@ public class OpenAIAPIService
 
         var response = await _httpClient.PostAsync("v1/chat/completions", httpContent);
 
+        // TODO: Add error handling on malformed json response
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadAsStringAsync();
-        }
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new SnakeCaseNamingStrategy()
+                }
+        };
+
+        OpenAICompletionResponse? responseDTO = JsonConvert.DeserializeObject<OpenAICompletionResponse>(await response.Content.ReadAsStringAsync(), settings);
+        var huh = await response.Content.ReadAsStringAsync();
+        return responseDTO;
+    }
+
 
         // Handle error response as appropriate for your application
         throw new HttpRequestException($"Error sending request: {response.StatusCode}");
-    }
 }
-
-public class OpenAICompletionRequest
-{
-    string Model { get; set; } = "gpt-3.5-turbo";
-    ICollection<Message> Messages { get; set; }
-    double Temperature { get; set; } = 0.7;
-
-    OpenAICompletionRequest(ICollection<Message> messages)
-    {
-        Messages = messages;
-    }
-
-    public class Message
-    {
-        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy))]
-        public RoleEnum Role { get; set; } = RoleEnum.User;
-        public string Content { get; set; }
-
-        public Message(string content)
-        {
-            if (string.IsNullOrEmpty(content))
-            {
-                throw new ArgumentException("Content cannot be null or empty");
-            }
-
-            Content = content;
-        }
-
-        public enum RoleEnum
-        {
-            System,
-            User,
-            Assistant,
-            Function
-
-        }
-    }
-
 }
 

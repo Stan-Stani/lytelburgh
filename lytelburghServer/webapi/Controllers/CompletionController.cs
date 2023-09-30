@@ -16,11 +16,11 @@ public class CompletionController : ControllerBase
         _openAIAPIService = openAIApiService;
     }
 
-    [HttpGet(Name = "GetCompletion")]
-    public async Task<string> Get()
-    {
-        return await _openAIAPIService.SendCompletionRequestAsync("hey...");
-    }
+    //[HttpGet(Name = "GetCompletion")]
+    //public async Task<string> Get()
+    //{
+    //    return await _openAIAPIService.SendCompletionRequestAsync("hey...");
+    //}
 
     public async Task<IActionResult> PostCompletionRequest([FromBody] CompletionRequestDTO completionRequestDTO)
     {
@@ -36,7 +36,7 @@ public class CompletionController : ControllerBase
 
     public class CompletionRequestDTO
     {
-        public string Content { get; set; }
+        public string? Content { get; set; }
     }
 
 }
