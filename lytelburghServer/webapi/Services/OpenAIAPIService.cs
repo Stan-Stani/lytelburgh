@@ -23,17 +23,19 @@ public class OpenAIAPIService
     }
 
     // Define type of response from OpenAI and handle error if type doesn't match expected type
-    public async Task<object> SendCompletionRequestAsync(string messageContent, double temperature = 0.7)
+    public async Task<object> SendCompletionRequestAsync(OpenAICompletionRequest completionRequest, double temperature = 0.7)
     {
-        var requestContent = new
-        {
-            model = "gpt-3.5-turbo",
-            messages = new[] { new { role = "user", content = messageContent } },
-            temperature
-        };
+        //var requestContent = new
+        //{
+        //    model = "gpt-3.5-turbo",
+        //    messages = new[] { new { role = "user", content = messageContent } },
+        //    temperature
+        //};
 
-        var jsonContent = JsonConvert.SerializeObject(requestContent);
+        var jsonContent = JsonConvert.SerializeObject(completionRequest);
         var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+
 
         var response = await _httpClient.PostAsync("v1/chat/completions", httpContent);
 
@@ -55,7 +57,8 @@ public class OpenAIAPIService
 
 
         // Handle error response as appropriate for your application
-        throw new HttpRequestException($"Error sending request: {response.StatusCode}");
+        throw new HttpRequestException($"Error sending request: {response.StatusCode} {response.ToString()}");
+        
 }
 }
 

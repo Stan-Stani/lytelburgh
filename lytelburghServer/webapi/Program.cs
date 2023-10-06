@@ -15,7 +15,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGenNewtonsoftSupport();
 builder.Services.AddOpenApiDocument();
+
+// Always use NewtonSoft json instead of built in (de)serializer.
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 //builder.Services.AddScoped<IMyService, MyService>();
 

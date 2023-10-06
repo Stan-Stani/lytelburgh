@@ -22,21 +22,27 @@ public class CompletionController : ControllerBase
     //    return await _openAIAPIService.SendCompletionRequestAsync("hey...");
     //}
 
-    public async Task<IActionResult> PostCompletionRequest([FromBody] CompletionRequestDTO completionRequestDTO)
+    public async Task<IActionResult> PostCompletionRequest([FromBody] OpenAICompletionRequest completionRequestDTO)
     {
-        if (completionRequestDTO == null || string.IsNullOrEmpty(completionRequestDTO.Content))
+        if (completionRequestDTO == null )
         {
             return BadRequest(new { message = "Invalid request" });
         }
 
-        var completion = await _openAIAPIService.SendCompletionRequestAsync(completionRequestDTO.Content);
+        var completion = await _openAIAPIService.SendCompletionRequestAsync(completionRequestDTO);
         return Ok(new { completion });
 
+
+
+
+        // https://stackoverflow.com/questions/23577021/ignore-null-values-when-serializing-json
+        return Ok();
+
     }
 
-    public class CompletionRequestDTO
-    {
-        public string? Content { get; set; }
-    }
+    //public class CompletionRequestDTO
+    //{
+    //    public string? Content { get; set; }
+    //}
 
 }
