@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Schema;
+using YamlDotNet.Core.Tokens;
 
 
 /// <summary>
@@ -76,7 +77,8 @@ public class OpenAICompletionRequest
     /// <br></br>
     /// Up to 4 sequences where the API will stop generating further tokens.
     ///</summary>
-    public string[]? Stop { get; set; } = new string[4];
+    public string[]? Stop { get; set; }
+
 
     /// <summary>
     /// Defaults to inf (whatever that means in JSON?)
@@ -159,26 +161,38 @@ public class OpenAICompletionRequest
         /// <br></br>
         /// To describe a function that accepts no parameters, provide the value {"type": "object", "properties": { } }.
         /// </summary>
-        // Need to convert from string coming from client to the JSchema object.
+      
         [JsonIgnore]
         public JSchema Parameters { get; set; }
 
-
+        /// <summary>
+        /// Communicates to Newtonsoft JSON serializer and Swagger that the parameters JSON property is a string.
+        /// Without this property, Newtonsoft tries to (de)serialize the parameters property as a json object.
+        /// (Deserializes after coming from our client and serializes before going to OpenAI endpoint.)
+        /// </summary>
         [JsonProperty("parameters")]
         public string ParametersJson
         {
             get => Parameters.ToString();
-            set => Parameters = JSchema.Parse(JsonConvert.DeserializeObject<string>(value));
+            set => Parameters = JSchema.Parse(value);
         }
 
 
         public Function(string name, string? description, JSchema parameters)
         {
-            Console.WriteLine("HEYEYEEY");
-            //Name = name;
-            //Description = description;
-            //Parameters = parameters;
-           
+            Name = name;
+            Description = description;
+            Parameters = parameters;
+
+        }
+
+        [JsonConstructor]
+        public Function(string name, string? description, string parameters)
+        {
+            Name = name;
+            Description = description;
+            Parameters = JSchema.Parse(parameters);
+
         }
     }
 

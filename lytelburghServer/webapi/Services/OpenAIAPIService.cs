@@ -32,7 +32,17 @@ public class OpenAIAPIService
         //    temperature
         //};
 
-        var jsonContent = JsonConvert.SerializeObject(completionRequest);
+        var serializationSettings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new SnakeCaseNamingStrategy()
+            }
+
+        };
+
+        var jsonContent = JsonConvert.SerializeObject(completionRequest, serializationSettings);
         var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
 
@@ -42,7 +52,7 @@ public class OpenAIAPIService
         // TODO: Add error handling on malformed json response
         if (response.IsSuccessStatusCode)
         {
-            var settings = new JsonSerializerSettings
+            var deserializationSettings = new JsonSerializerSettings
             {
                 ContractResolver = new DefaultContractResolver
                 {
@@ -50,8 +60,8 @@ public class OpenAIAPIService
                 }
         };
 
-        OpenAICompletionResponse? responseDTO = JsonConvert.DeserializeObject<OpenAICompletionResponse>(await response.Content.ReadAsStringAsync(), settings);
-        var huh = await response.Content.ReadAsStringAsync();
+        OpenAICompletionResponse? responseDTO = JsonConvert.DeserializeObject<OpenAICompletionResponse>(await response.Content.ReadAsStringAsync(), deserializationSettings);
+
         return responseDTO;
     }
 
